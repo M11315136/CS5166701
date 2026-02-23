@@ -11,16 +11,29 @@ import {
   Collider2D,
   PhysicsSystem2D,
   Contact2DType,
+  Node,
 } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("PlayerController")
 export class PlayerController extends Component {
-  @property
-  public moveSpeed = 5;
+  @property(Node)
+  public readonly player: Node = null;
 
-  @property
-  public jumpForce = 8;
+  @property({ group: "Settings" })
+  public readonly moveSpeed = 5;
+
+  @property({ group: "Settings" })
+  public readonly jumpForce = 8;
+
+  @property({ group: "Animation Name" })
+  public readonly idleAnim = "idle";
+
+  @property({ group: "Animation Name" })
+  public readonly walkAnim = "walk";
+
+  @property({ group: "Animation Name" })
+  public readonly jumpAnim = "jump";
 
   private _anim: Animation;
   private _rb: RigidBody2D;
@@ -29,16 +42,20 @@ export class PlayerController extends Component {
   private _isGrounded = true;
   private _currentState = "";
 
+  // TODO:
+  // 1. 左右移動有機會會停下
+  // 2. 地板側邊可以跳躍或左右移動卡在牆上
+
   protected start() {
-    this._anim = this.getComponent(Animation)!;
-    this._rb = this.getComponent(RigidBody2D)!;
+    this._anim = this.player.getComponent(Animation)!;
+    this._rb = this.player.getComponent(RigidBody2D)!;
 
     input.on(Input.EventType.KEY_DOWN, this._onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this._onKeyUp, this);
 
-    this._playAnim("idle");
+    this._playAnim(this.idleAnim);
     PhysicsSystem2D.instance.enable = true;
-    const collider = this.getComponent(Collider2D);
+    const collider = this.player.getComponent(Collider2D);
     collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
   }
 
@@ -65,7 +82,7 @@ export class PlayerController extends Component {
     this._rb.linearVelocity = v;
 
     if (this._moveDir !== 0) {
-      this.node.setScale(this._moveDir, 1, 1);
+      this.player.setScale(this._moveDir, 1, 1);
     }
   }
 
@@ -78,16 +95,16 @@ export class PlayerController extends Component {
     );
 
     this._isGrounded = false;
-    this._playAnim("jump");
+    this._playAnim(this.jumpAnim);
   }
 
   private updateAnimation() {
     if (!this._isGrounded) return;
 
     if (this._moveDir === 0) {
-      this._playAnim("idle");
+      this._playAnim(this.idleAnim);
     } else {
-      this._playAnim("walk");
+      this._playAnim(this.walkAnim);
     }
   }
 
@@ -101,7 +118,7 @@ export class PlayerController extends Component {
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     if (other.tag === 1 && this._isGrounded === false) {
       this._isGrounded = true;
-      this._playAnim("idle");
+      this._playAnim(this.idleAnim);
     }
   }
 }
