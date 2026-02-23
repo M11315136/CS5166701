@@ -61,7 +61,7 @@ export class PlayerController extends Component {
 
   protected update() {
     this.updateMovement();
-    this.updateAnimation();
+    this._updateAnimation();
   }
 
   private _onKeyDown(e: EventKeyboard) {
@@ -73,6 +73,14 @@ export class PlayerController extends Component {
   private _onKeyUp(e: EventKeyboard) {
     if (e.keyCode === KeyCode.KEY_A || e.keyCode === KeyCode.KEY_D) {
       this._moveDir = 0;
+    }
+  }
+
+  // 地面碰撞
+  private _onBeginContact(self: Collider2D, other: Collider2D) {
+    if (other.tag === 1 && this._isGrounded === false) {
+      this._isGrounded = true;
+      this._playAnim(this.idleAnim);
     }
   }
 
@@ -98,7 +106,7 @@ export class PlayerController extends Component {
     this._playAnim(this.jumpAnim);
   }
 
-  private updateAnimation() {
+  private _updateAnimation() {
     if (!this._isGrounded) return;
 
     if (this._moveDir === 0) {
@@ -112,13 +120,5 @@ export class PlayerController extends Component {
     if (this._currentState === name) return;
     this._currentState = name;
     this._anim.play(name);
-  }
-
-  // 地面碰撞
-  private _onBeginContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === 1 && this._isGrounded === false) {
-      this._isGrounded = true;
-      this._playAnim(this.idleAnim);
-    }
   }
 }
