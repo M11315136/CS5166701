@@ -67,7 +67,6 @@ export default class DoorController extends Component {
   }
 
   private _onBeginContact(self: Collider2D, other: Collider2D) {
-    console.log("Door contact", other.tag);
     if (other.tag === DataStructure.Tag.Player && this._isOpen) {
       this.winBoard.active = true;
     }
