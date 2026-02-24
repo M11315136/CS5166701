@@ -4,7 +4,7 @@ export namespace DataStructure {
         Ground = 1,
         Door = 2,
         KeyYellow = 3,
-
+        Block = 4,
     }
 }
 

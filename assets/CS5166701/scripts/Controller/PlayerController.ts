@@ -13,6 +13,7 @@ import {
   Contact2DType,
   Node,
 } from "cc";
+import { DataStructure } from "../DataStructure";
 const { ccclass, property } = _decorator;
 
 @ccclass("PlayerController")
@@ -57,45 +58,18 @@ export class PlayerController extends Component {
     PhysicsSystem2D.instance.enable = true;
     const collider = this.player.getComponent(Collider2D);
     collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
+    collider.on(Contact2DType.END_CONTACT, this._onEndContact, this);
   }
 
   protected update() {
-    this.updateMovement();
+    this._updateMovement();
     this._updateAnimation();
   }
 
-  private _onKeyDown(e: EventKeyboard) {
-    if (e.keyCode === KeyCode.KEY_A) this._moveDir = -1;
-    if (e.keyCode === KeyCode.KEY_D) this._moveDir = 1;
-    if (e.keyCode === KeyCode.KEY_W) this.jump();
-  }
-
-  private _onKeyUp(e: EventKeyboard) {
-    if (e.keyCode === KeyCode.KEY_A || e.keyCode === KeyCode.KEY_D) {
-      this._moveDir = 0;
+  protected jump() {
+    if (!this._isGrounded) {
+      return;
     }
-  }
-
-  // 地面碰撞
-  private _onBeginContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === 1 && this._isGrounded === false) {
-      this._isGrounded = true;
-      this._playAnim(this.idleAnim);
-    }
-  }
-
-  private updateMovement() {
-    const v = this._rb.linearVelocity;
-    v.x = this._moveDir * this.moveSpeed;
-    this._rb.linearVelocity = v;
-
-    if (this._moveDir !== 0) {
-      this.player.setScale(this._moveDir, 1, 1);
-    }
-  }
-
-  private jump() {
-    if (!this._isGrounded) return;
 
     this._rb.linearVelocity = new Vec2(
       this._rb.linearVelocity.x,
@@ -106,8 +80,57 @@ export class PlayerController extends Component {
     this._playAnim(this.jumpAnim);
   }
 
+  private _onKeyDown(e: EventKeyboard) {
+    switch (e.keyCode) {
+      case KeyCode.KEY_A:
+        this._moveDir = -1;
+        break;
+      case KeyCode.KEY_D:
+        this._moveDir = 1;
+        break;
+      case KeyCode.KEY_W:
+        this.jump();
+        break;
+    }
+  }
+
+  private _onKeyUp(e: EventKeyboard) {
+    if (e.keyCode === KeyCode.KEY_A || e.keyCode === KeyCode.KEY_D) {
+      this._moveDir = 0;
+    }
+  }
+
+  // 地面碰撞
+  private _onBeginContact(self: Collider2D, other: Collider2D) {
+    if (other.tag === DataStructure.Tag.Ground && this._isGrounded === false) {
+      this._isGrounded = true;
+      this._playAnim(this.idleAnim);
+    } else if (other.tag === DataStructure.Tag.Block) {
+      // TODO： 改成碰到側面才停下 (現在頭頂到 Block 也會停在原地)
+      this._moveDir = 0;
+    }
+  }
+
+  private _onEndContact(self: Collider2D, other: Collider2D) {
+    if (other.tag === DataStructure.Tag.Ground) {
+      this._isGrounded = false;
+    }
+  }
+
+  private _updateMovement() {
+    const v = this._rb.linearVelocity;
+    v.x = this._moveDir * this.moveSpeed;
+    this._rb.linearVelocity = v;
+
+    if (this._moveDir !== 0) {
+      this.player.setScale(this._moveDir, 1, 1);
+    }
+  }
+
   private _updateAnimation() {
-    if (!this._isGrounded) return;
+    if (!this._isGrounded) {
+      return;
+    }
 
     if (this._moveDir === 0) {
       this._playAnim(this.idleAnim);
@@ -117,7 +140,9 @@ export class PlayerController extends Component {
   }
 
   private _playAnim(name: string) {
-    if (this._currentState === name) return;
+    if (this._currentState === name) {
+      return;
+    }
     this._currentState = name;
     this._anim.play(name);
   }
