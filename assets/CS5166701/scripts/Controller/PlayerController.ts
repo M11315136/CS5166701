@@ -16,6 +16,12 @@ import {
 import { DataStructure } from "../DataStructure";
 const { ccclass, property } = _decorator;
 
+enum MoveDir {
+  Left = -1,
+  Stop = 0,
+  Right = 1,
+}
+
 @ccclass("PlayerController")
 export class PlayerController extends Component {
   @property(Node)
@@ -39,9 +45,22 @@ export class PlayerController extends Component {
   private _anim: Animation;
   private _rb: RigidBody2D;
 
-  private _moveDir = 0;
+  private _moveDir = MoveDir.Stop;
   private _isGrounded = true;
   private _currentState = "";
+  private _lastMoveDir = 0;
+
+  private get moveDir() {
+    return this._moveDir;
+  }
+
+  private set moveDir(value: number) {
+    if (value === this._moveDir) {
+      return;
+    }
+    this._lastMoveDir = this._moveDir;
+    this._moveDir = value;
+  }
 
   // TODO:
   // 1. 左右移動有機會會停下
@@ -80,13 +99,16 @@ export class PlayerController extends Component {
     this._playAnim(this.jumpAnim);
   }
 
+  // TODO: 左右邊持續按壓處理
   private _onKeyDown(e: EventKeyboard) {
     switch (e.keyCode) {
       case KeyCode.KEY_A:
-        this._moveDir = -1;
+        this._moveDir = MoveDir.Left;
+        this._lastMoveDir = this._moveDir;
         break;
       case KeyCode.KEY_D:
-        this._moveDir = 1;
+        this._moveDir = MoveDir.Right;
+        this._lastMoveDir = this._moveDir;
         break;
       case KeyCode.KEY_W:
         this.jump();
@@ -96,7 +118,7 @@ export class PlayerController extends Component {
 
   private _onKeyUp(e: EventKeyboard) {
     if (e.keyCode === KeyCode.KEY_A || e.keyCode === KeyCode.KEY_D) {
-      this._moveDir = 0;
+      this.moveDir = MoveDir.Stop;
     }
   }
 
@@ -106,24 +128,25 @@ export class PlayerController extends Component {
       this._isGrounded = true;
       this._playAnim(this.idleAnim);
     } else if (other.tag === DataStructure.Tag.Block) {
-      // TODO： 改成碰到側面才停下 (現在頭頂到 Block 也會停在原地)
-      this._moveDir = 0;
+      this.moveDir = MoveDir.Stop;
     }
   }
 
   private _onEndContact(self: Collider2D, other: Collider2D) {
     if (other.tag === DataStructure.Tag.Ground) {
       this._isGrounded = false;
+    } else if (other.tag === DataStructure.Tag.Block) {
+      this.moveDir = this._lastMoveDir;
     }
   }
 
   private _updateMovement() {
     const v = this._rb.linearVelocity;
-    v.x = this._moveDir * this.moveSpeed;
+    v.x = this.moveDir * this.moveSpeed;
     this._rb.linearVelocity = v;
 
-    if (this._moveDir !== 0) {
-      this.player.setScale(this._moveDir, 1, 1);
+    if (this.moveDir !== MoveDir.Stop) {
+      this.player.setScale(this.moveDir, 1, 1);
     }
   }
 
@@ -132,7 +155,7 @@ export class PlayerController extends Component {
       return;
     }
 
-    if (this._moveDir === 0) {
+    if (this.moveDir === MoveDir.Stop) {
       this._playAnim(this.idleAnim);
     } else {
       this._playAnim(this.walkAnim);
