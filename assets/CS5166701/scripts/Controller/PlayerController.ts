@@ -13,7 +13,7 @@ import {
   Contact2DType,
   Node,
 } from "cc";
-import { DataStructure } from "../DataStructure";
+import { DataType } from "../Game/DataStructure";
 const { ccclass, property } = _decorator;
 
 enum MoveDir {
@@ -22,8 +22,13 @@ enum MoveDir {
   Right = 1,
 }
 
+enum EventType {
+  KeyCollected = "key-collected",
+}
+
 @ccclass("PlayerController")
 export class PlayerController extends Component {
+  public static EVENT_TYPE = EventType;
   @property(Node)
   public readonly player: Node = null;
 
@@ -61,10 +66,6 @@ export class PlayerController extends Component {
     this._lastMoveDir = this._moveDir;
     this._moveDir = value;
   }
-
-  // TODO:
-  // 1. 左右移動有機會會停下
-  // 2. 地板側邊可以跳躍或左右移動卡在牆上
 
   protected start() {
     this._anim = this.player.getComponent(Animation)!;
@@ -124,18 +125,18 @@ export class PlayerController extends Component {
 
   // 地面碰撞
   private _onBeginContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataStructure.Tag.Ground && this._isGrounded === false) {
+    if (other.tag === DataType.Tag.Ground && this._isGrounded === false) {
       this._isGrounded = true;
       this._playAnim(this.idleAnim);
-    } else if (other.tag === DataStructure.Tag.Block) {
+    } else if (other.tag === DataType.Tag.Block) {
       this.moveDir = MoveDir.Stop;
     }
   }
 
   private _onEndContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataStructure.Tag.Ground) {
+    if (other.tag === DataType.Tag.Ground) {
       this._isGrounded = false;
-    } else if (other.tag === DataStructure.Tag.Block) {
+    } else if (other.tag === DataType.Tag.Block) {
       this.moveDir = this._lastMoveDir;
     }
   }

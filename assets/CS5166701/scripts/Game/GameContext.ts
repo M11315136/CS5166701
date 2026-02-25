@@ -1,7 +1,8 @@
 import { _decorator, Component, Node } from "cc";
-import KeyController from "./Controller/KeyController";
-import DoorController from "./Controller/DoorController";
+import KeyController from "../Controller/KeyController";
+import DoorController from "../Controller/DoorController";
 import Game from "./Game";
+import { PlayerController } from "../Controller/PlayerController";
 
 const { ccclass, property } = _decorator;
 
@@ -14,6 +15,9 @@ export default class GameContext extends Component {
 
   @property(DoorController)
   public readonly doorController: DoorController = null;
+
+  @property(PlayerController)
+  public readonly playerController: PlayerController = null;
 
   protected onLoad(): void {
     Game.context = this;

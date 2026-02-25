@@ -1,4 +1,4 @@
-export namespace DataStructure {
+export namespace DataType {
     export enum Tag {
         Player = 0,
         Ground = 1,
