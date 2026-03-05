@@ -26,7 +26,7 @@
     "_prefab": null,
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 118
+      "__id__": 119
     },
     "_id": "467d7c3c-947a-4cc4-a85c-e1b24d787110"
   },
@@ -42,13 +42,13 @@
         "__id__": 3
       },
       {
-        "__id__": 112
+        "__id__": 113
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 117
+        "__id__": 118
       }
     ],
     "_prefab": null,
@@ -136,7 +136,7 @@
       "__id__": 5
     },
     "moveSpeed": 5,
-    "jumpForce": 13,
+    "jumpForce": 9,
     "idleAnim": "idle",
     "walkAnim": "walk",
     "jumpAnim": "jump",
@@ -166,13 +166,16 @@
       },
       {
         "__id__": 111
+      },
+      {
+        "__id__": 112
       }
     ],
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -243.235,
-      "y": -243.005,
+      "y": -244.097,
       "z": 0
     },
     "_lrot": {
@@ -324,7 +327,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 320,
+    "_orthoHeight": 351.7557251908397,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -614,7 +617,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -406.053,
-      "y": -161.402,
+      "y": -159.701,
       "z": 0
     },
     "_lrot": {
@@ -1588,7 +1591,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -405.275,
+      "x": -810.405,
       "y": -161.402,
       "z": 0
     },
@@ -3743,7 +3746,7 @@
     "__prefab": null,
     "enabledContactListener": true,
     "bullet": false,
-    "awakeOnLoad": true,
+    "awakeOnLoad": false,
     "_group": 2,
     "_type": 2,
     "_allowSleep": true,
@@ -3760,6 +3763,21 @@
     "_id": "c2VJDxIB9CFI5ES5vgaEh7"
   },
   {
+    "__type__": "cc.animation.AnimationController",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 5
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "graph": {
+      "__uuid__": "3394bd21-25ec-457f-9a16-6d5523b9bf5f",
+      "__expectedType__": "cc.animation.AnimationGraph"
+    },
+    "_id": "a1h0yMm71IVpm/6/tS6puX"
+  },
+  {
     "__type__": "cc.Node",
     "_name": "Items",
     "_objFlags": 0,
@@ -3768,10 +3786,10 @@
     },
     "_children": [
       {
-        "__id__": 113
+        "__id__": 114
       },
       {
-        "__id__": 115
+        "__id__": 116
       }
     ],
     "_active": true,
@@ -3810,13 +3828,13 @@
     "_name": "Key",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 112
+      "__id__": 113
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 114
+        "__id__": 115
       }
     ],
     "_prefab": null,
@@ -3853,7 +3871,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 113
+      "__id__": 114
     },
     "_enabled": true,
     "__prefab": null,
@@ -3868,13 +3886,13 @@
     "_name": "Door",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 112
+      "__id__": 113
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 116
+        "__id__": 117
       }
     ],
     "_prefab": null,
@@ -3911,7 +3929,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 115
+      "__id__": 116
     },
     "_enabled": true,
     "__prefab": null,
@@ -3936,7 +3954,7 @@
     "__prefab": null,
     "keyController": null,
     "doorController": {
-      "__id__": 116
+      "__id__": 117
     },
     "playerController": {
       "__id__": 4
@@ -3946,19 +3964,19 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 119
-    },
-    "shadows": {
       "__id__": 120
     },
-    "_skybox": {
+    "shadows": {
       "__id__": 121
     },
-    "fog": {
+    "_skybox": {
       "__id__": 122
     },
-    "octree": {
+    "fog": {
       "__id__": 123
+    },
+    "octree": {
+      "__id__": 124
     }
   },
   {

@@ -54,6 +54,7 @@ export class PlayerController extends Component {
   private _isGrounded = true;
   private _currentState = "";
   private _lastMoveDir = 0;
+  private doubleCheck = false;
 
   private get moveDir() {
     return this._moveDir;
@@ -70,7 +71,6 @@ export class PlayerController extends Component {
   protected start() {
     this._anim = this.player.getComponent(Animation)!;
     this._rb = this.player.getComponent(RigidBody2D)!;
-
     input.on(Input.EventType.KEY_DOWN, this._onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this._onKeyUp, this);
 
@@ -78,7 +78,6 @@ export class PlayerController extends Component {
     PhysicsSystem2D.instance.enable = true;
     const collider = this.player.getComponent(Collider2D);
     collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
-    collider.on(Contact2DType.END_CONTACT, this._onEndContact, this);
   }
 
   protected update() {
@@ -95,8 +94,8 @@ export class PlayerController extends Component {
       this._rb.linearVelocity.x,
       this.jumpForce,
     );
-
     this._isGrounded = false;
+    console.log("跳躍！", this._rb.linearVelocity);
     this._playAnim(this.jumpAnim);
   }
 
@@ -126,18 +125,12 @@ export class PlayerController extends Component {
   // 地面碰撞
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     if (other.tag === DataType.Tag.Ground && this._isGrounded === false) {
-      this._isGrounded = true;
-      this._playAnim(this.idleAnim);
+      if (this.doubleCheck) {
+        this._isGrounded = true;
+      }
+      this.doubleCheck = !this.doubleCheck;
     } else if (other.tag === DataType.Tag.Block) {
       this.moveDir = MoveDir.Stop;
-    }
-  }
-
-  private _onEndContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataType.Tag.Ground) {
-      this._isGrounded = false;
-    } else if (other.tag === DataType.Tag.Block) {
-      this.moveDir = this._lastMoveDir;
     }
   }
 
