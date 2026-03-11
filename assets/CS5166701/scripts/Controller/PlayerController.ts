@@ -12,6 +12,7 @@ import {
   PhysicsSystem2D,
   Contact2DType,
   Node,
+  Camera,
 } from "cc";
 import { DataType } from "../Game/DataStructure";
 const { ccclass, property } = _decorator;
@@ -31,6 +32,9 @@ export class PlayerController extends Component {
   public static EVENT_TYPE = EventType;
   @property(Node)
   public readonly player: Node = null;
+
+  @property(Camera)
+  public readonly camera: Camera = null;
 
   @property({ group: "Settings" })
   public readonly moveSpeed = 5;
@@ -138,7 +142,11 @@ export class PlayerController extends Component {
     const v = this._rb.linearVelocity;
     v.x = this.moveDir * this.moveSpeed;
     this._rb.linearVelocity = v;
-
+    this.camera.node.setPosition(
+      Math.min(Math.max(this.player.getPosition().x, 0),1920),
+      this.camera.node.getPosition().y,
+      this.camera.node.getPosition().z,
+    );
     if (this.moveDir !== MoveDir.Stop) {
       this.player.setScale(this.moveDir, 1, 1);
     }
