@@ -63,6 +63,10 @@ export class PlayerController extends Component {
   private _blockedLeftContacts: number = 0;
   private _blockedRightContacts: number = 0;
 
+  private get onAir() {
+    return parseFloat(this._rb.linearVelocity.y.toFixed(3)) !== 0;
+  }
+
   private get moveDir() {
     return this._moveDir;
   }
@@ -252,13 +256,14 @@ export class PlayerController extends Component {
 
   // TODO: 移動時會持續更新 Start/End Contact，導致 isGrounded 狀態不固定 (持續 false)，需修正。
   private _updateAnimation() {
-    if (!this._isGrounded) {
-      return;
-    }
-
-    if (this.moveDir === MoveDir.Stop) {
+    if (this.onAir) {
+      this._playAnim(this.jumpAnim);
+    } else if (this.moveDir === MoveDir.Stop) {
       this._playAnim(this.idleAnim);
-    } else {
+    } else if (
+      this.moveDir === MoveDir.Left ||
+      this.moveDir === MoveDir.Right
+    ) {
       this._playAnim(this.walkAnim);
     }
   }
