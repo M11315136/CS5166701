@@ -8,9 +8,7 @@ import {
   input,
   EventKeyboard,
   KeyCode,
-  Collider2D,
   PhysicsSystem2D,
-  Contact2DType,
   Node,
   Camera,
 } from "cc";
@@ -59,13 +57,8 @@ export class PlayerController extends Component {
   private _currentState: string = "";
   private _leftHeld: boolean = false;
   private _rightHeld: boolean = false;
-  private _groundContacts: number = 0;
   private _blockedLeftContacts: number = 0;
   private _blockedRightContacts: number = 0;
-
-  private get onAir() {
-    return parseFloat(this._rb.linearVelocity.y.toFixed(3)) !== 0;
-  }
 
   private get moveDir() {
     return this._moveDir;
@@ -86,14 +79,12 @@ export class PlayerController extends Component {
 
     this._playAnim(this.idleAnim);
     PhysicsSystem2D.instance.enable = true;
-    const collider = this.player.getComponent(Collider2D);
-    collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
-    collider.on(Contact2DType.END_CONTACT, this._onEndContact, this);
   }
 
   protected update() {
     this._updateMovement();
     this._updateAnimation();
+    this._checkGrounded();
   }
 
   protected jump() {
@@ -105,9 +96,35 @@ export class PlayerController extends Component {
       this._rb.linearVelocity.x,
       this.jumpForce,
     );
-    this._isGrounded = false;
     console.log("跳躍！", this._rb.linearVelocity);
     this._playAnim(this.jumpAnim);
+  }
+
+  // 透過射線檢測玩家是否接觸地面，更新 _isGrounded 狀態
+  private _checkGrounded() {
+    const worldPos = this.player.worldPosition;
+    // 射線起點稍微高一點點，確保穿過腳底
+    const start = new Vec2(worldPos.x, worldPos.y);
+    const end = new Vec2(worldPos.x, worldPos.y - 30);
+
+    const results = PhysicsSystem2D.instance.raycast(start, end);
+
+    if (results.length > 0) {
+      // 找到第一個符合條件的地板
+      const groundHit = results.find((res) => {
+        // 條件 1: Tag 是地板或障礙物
+        const isTarget = res.collider.tag === DataType.Tag.Ground;
+
+        // 條件 2: 法線向上 (避免射線掃到側牆也算接地)
+        const isFloor = res.normal.y >= 0.9;
+
+        return isTarget && isFloor;
+      });
+
+      this._isGrounded = !!groundHit;
+    } else {
+      this._isGrounded = false;
+    }
   }
 
   private _onKeyDown(e: EventKeyboard) {
@@ -166,71 +183,6 @@ export class PlayerController extends Component {
     this.moveDir = this._leftHeld ? MoveDir.Left : MoveDir.Right;
   }
 
-  // 地面與障礙碰撞狀態更新
-  private _onBeginContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataType.Tag.Ground) {
-      this._groundContacts += 1;
-      this._isGrounded = true;
-      return;
-    }
-
-    if (other.tag === DataType.Tag.Block) {
-      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
-      const deltaY = other.node.worldPosition.y - self.node.worldPosition.y;
-
-      // 垂直接觸優先視為地面/天花板；水平才視為左右阻擋。
-      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
-        if (deltaY > 0) {
-          const v = this._rb.linearVelocity;
-          if (v.y > 0) {
-            v.y = 0;
-            this._rb.linearVelocity = v;
-          }
-        } else {
-          this._groundContacts += 1;
-          this._isGrounded = true;
-        }
-        return;
-      }
-
-      if (deltaX > 0) {
-        this._blockedRightContacts += 1;
-      } else {
-        this._blockedLeftContacts += 1;
-      }
-    }
-  }
-
-  private _onEndContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataType.Tag.Ground) {
-      this._groundContacts = Math.max(-1, this._groundContacts - 1);
-      this._isGrounded = this._groundContacts >= 0;
-      return;
-    }
-
-    if (other.tag === DataType.Tag.Block) {
-      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
-      const deltaY = other.node.worldPosition.y - self.node.worldPosition.y;
-
-      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
-        if (deltaY <= 0) {
-          this._groundContacts = Math.max(0, this._groundContacts - 1);
-          this._isGrounded = this._groundContacts > 0;
-        }
-        return;
-      }
-
-      if (deltaX > 0) {
-        this._blockedRightContacts = Math.max(
-          0,
-          this._blockedRightContacts - 1,
-        );
-      } else {
-        this._blockedLeftContacts = Math.max(0, this._blockedLeftContacts - 1);
-      }
-    }
-  }
-
   private _updateMovement() {
     const v = this._rb.linearVelocity;
 
@@ -255,8 +207,9 @@ export class PlayerController extends Component {
   }
 
   // TODO: 移動時會持續更新 Start/End Contact，導致 isGrounded 狀態不固定 (持續 false)，需修正。
+  // 改用射線判斷是否觸地，避免移動時接觸地面狀態不穩定的問題。
   private _updateAnimation() {
-    if (this.onAir) {
+    if (!this._isGrounded) {
       this._playAnim(this.jumpAnim);
     } else if (this.moveDir === MoveDir.Stop) {
       this._playAnim(this.idleAnim);
