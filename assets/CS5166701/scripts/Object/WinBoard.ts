@@ -1,8 +1,12 @@
-import { _decorator, Component, Node, Button } from "cc";
+import { _decorator, Component, Node, Button, Label } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("WinBoard")
 export class WinBoard extends Component {
+  @property(Node)
+  public readonly winBoard: Node = null;
+  @property(Label)
+  public readonly label: Label = null;
   @property(Button)
   public restartBtn: Button = null;
 
