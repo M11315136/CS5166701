@@ -5,6 +5,7 @@ export namespace DataType {
         Door = 2,
         KeyYellow = 3,
         Block = 4,
+        Hole = 5,
     }
 }
 

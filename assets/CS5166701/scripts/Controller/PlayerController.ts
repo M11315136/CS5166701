@@ -11,8 +11,12 @@ import {
   PhysicsSystem2D,
   Node,
   Camera,
+  Contact2DType,
+  Collider2D,
+  v3,
 } from "cc";
 import { DataType } from "../Game/DataStructure";
+import { WinBoard } from "../Object/WinBoard";
 const { ccclass, property } = _decorator;
 
 enum MoveDir {
@@ -30,6 +34,9 @@ export class PlayerController extends Component {
   public static EVENT_TYPE = EventType;
   @property(Node)
   public readonly player: Node = null;
+
+  @property(WinBoard)
+  public readonly winBoard: WinBoard = null;
 
   @property(Camera)
   public readonly camera: Camera = null;
@@ -78,7 +85,9 @@ export class PlayerController extends Component {
     input.on(Input.EventType.KEY_UP, this._onKeyUp, this);
 
     this._playAnim(this.idleAnim);
+    const collider = this.player.getComponent(Collider2D);
     PhysicsSystem2D.instance.enable = true;
+    collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
   }
 
   protected update() {
@@ -98,6 +107,18 @@ export class PlayerController extends Component {
     );
     console.log("跳躍！", this._rb.linearVelocity);
     this._playAnim(this.jumpAnim);
+  }
+
+  private _onBeginContact(self: Collider2D, other: Collider2D) {
+    if (other.tag === DataType.Tag.Hole) {
+      this.winBoard.node.active = true;
+      this.winBoard.label.string = "You Lose!";
+      this.winBoard.node.position = v3(
+        this.player.position.x,
+        this.winBoard.node.position.y,
+        0,
+      );
+    }
   }
 
   // 透過射線檢測玩家是否接觸地面，更新 _isGrounded 狀態
