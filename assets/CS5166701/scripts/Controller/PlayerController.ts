@@ -88,6 +88,7 @@ export class PlayerController extends Component {
     const collider = this.player.getComponent(Collider2D);
     PhysicsSystem2D.instance.enable = true;
     collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
+    collider.on(Contact2DType.END_CONTACT, this._onEndContact, this);
   }
 
   protected update() {
@@ -118,6 +119,29 @@ export class PlayerController extends Component {
         this.winBoard.node.position.y,
         0,
       );
+    }
+
+    if (other.tag === DataType.Tag.Block) {
+      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
+      if (deltaX > 0) {
+        this._blockedRightContacts += 1;
+      } else {
+        this._blockedLeftContacts += 1;
+      }
+    }
+  }
+
+  private _onEndContact(self: Collider2D, other: Collider2D) {
+    if (other.tag === DataType.Tag.Block) {
+      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
+      if (deltaX > 0) {
+        this._blockedRightContacts = Math.max(
+          0,
+          this._blockedRightContacts - 1,
+        );
+      } else {
+        this._blockedLeftContacts = Math.max(0, this._blockedLeftContacts - 1);
+      }
     }
   }
 
