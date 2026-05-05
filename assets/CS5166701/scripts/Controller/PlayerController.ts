@@ -14,6 +14,7 @@ import {
   Contact2DType,
   Collider2D,
   v3,
+  UITransform,
 } from "cc";
 import { DataType } from "../Game/DataStructure";
 import { WinBoard } from "../Object/WinBoard";
@@ -64,8 +65,8 @@ export class PlayerController extends Component {
   private _currentState: string = "";
   private _leftHeld: boolean = false;
   private _rightHeld: boolean = false;
-  private _blockedLeftContacts: number = 0;
-  private _blockedRightContacts: number = 0;
+  private _blockedLeft: boolean = false;
+  private _blockedRight: boolean = false;
 
   private get moveDir() {
     return this._moveDir;
@@ -92,9 +93,11 @@ export class PlayerController extends Component {
   }
 
   protected update() {
+    this._checkGrounded();
+    this._checkBlockedLeft();
+    this._checkBlockedRight();
     this._updateMovement();
     this._updateAnimation();
-    this._checkGrounded();
   }
 
   protected jump() {
@@ -120,29 +123,10 @@ export class PlayerController extends Component {
         0,
       );
     }
-
-    if (other.tag === DataType.Tag.Block) {
-      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
-      if (deltaX > 0) {
-        this._blockedRightContacts += 1;
-      } else {
-        this._blockedLeftContacts += 1;
-      }
-    }
   }
 
   private _onEndContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataType.Tag.Block) {
-      const deltaX = other.node.worldPosition.x - self.node.worldPosition.x;
-      if (deltaX > 0) {
-        this._blockedRightContacts = Math.max(
-          0,
-          this._blockedRightContacts - 1,
-        );
-      } else {
-        this._blockedLeftContacts = Math.max(0, this._blockedLeftContacts - 1);
-      }
-    }
+    // 射線檢測已取代接觸事件的水平阻擋偵測
   }
 
   // 透過射線檢測玩家是否接觸地面，更新 _isGrounded 狀態
@@ -170,6 +154,64 @@ export class PlayerController extends Component {
     } else {
       this._isGrounded = false;
     }
+  }
+
+  // 透過射線檢測玩家左側是否被障礙物擋住
+  private _checkBlockedLeft() {
+    const worldPos = this.player.worldPosition;
+    // 在三個高度位置檢測：上、中、下
+    const playerHeight = this.player.getComponent(UITransform).height;
+    const offsets = [playerHeight / 2, 0, -playerHeight / 2];
+    const rayDistance = 20;
+
+    for (const offset of offsets) {
+      const start = new Vec2(worldPos.x, worldPos.y + offset);
+      const end = new Vec2(worldPos.x - rayDistance, worldPos.y + offset);
+
+      const results = PhysicsSystem2D.instance.raycast(start, end);
+
+      const blocked = results.some((res) => {
+        const isBlock = res.collider.tag === DataType.Tag.Block;
+        const isLeftWall = res.normal.x >= 0.9;
+        return isBlock && isLeftWall;
+      });
+
+      if (blocked) {
+        this._blockedLeft = true;
+        return;
+      }
+    }
+
+    this._blockedLeft = false;
+  }
+
+  // 透過射線檢測玩家右側是否被障礙物擋住
+  private _checkBlockedRight() {
+    const worldPos = this.player.worldPosition;
+    // 在三個高度位置檢測：上、中、下
+    const playerHeight = this.player.getComponent(UITransform).height;
+    const offsets = [playerHeight / 2, 0, -playerHeight / 2];
+    const rayDistance = 30;
+
+    for (const offset of offsets) {
+      const start = new Vec2(worldPos.x, worldPos.y + offset);
+      const end = new Vec2(worldPos.x + rayDistance, worldPos.y + offset);
+
+      const results = PhysicsSystem2D.instance.raycast(start, end);
+
+      const blocked = results.some((res) => {
+        const isBlock = res.collider.tag === DataType.Tag.Block;
+        const isRightWall = res.normal.x <= -0.9;
+        return isBlock && isRightWall;
+      });
+
+      if (blocked) {
+        this._blockedRight = true;
+        return;
+      }
+    }
+
+    this._blockedRight = false;
   }
 
   private _onKeyDown(e: EventKeyboard) {
@@ -232,8 +274,8 @@ export class PlayerController extends Component {
     const v = this._rb.linearVelocity;
 
     if (
-      (this.moveDir === MoveDir.Right && this._blockedRightContacts > 0) ||
-      (this.moveDir === MoveDir.Left && this._blockedLeftContacts > 0)
+      (this.moveDir === MoveDir.Right && this._blockedRight) ||
+      (this.moveDir === MoveDir.Left && this._blockedLeft)
     ) {
       v.x = 0;
     } else {
