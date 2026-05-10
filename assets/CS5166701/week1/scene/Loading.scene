@@ -28,7 +28,7 @@
     "_globals": {
       "__id__": 44
     },
-    "_id": "2bdd4a46-161d-43b0-9187-310dfcfae41f"
+    "_id": "2fc2b7ed-3a17-42aa-bd2d-f39b4a7bc6ec"
   },
   {
     "__type__": "cc.Node",
@@ -82,13 +82,14 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "gameName": "Game",
     "progressBar": {
       "__id__": 4
     },
     "startBtn": {
       "__id__": 35
     },
-    "speed": 0.01,
+    "speed": 0.1,
     "_id": "23BEfzRnNDbrYtfaDQwClW"
   },
   {
@@ -198,7 +199,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 480,
+      "x": 479.99999999999994,
       "y": 320.00000000000006,
       "z": 0
     },
@@ -1351,8 +1352,8 @@
     "__prefab": null,
     "_alignFlags": 45,
     "_target": null,
-    "_left": 0,
-    "_right": 0,
+    "_left": -5.684341886080802e-14,
+    "_right": -5.684341886080802e-14,
     "_top": 5.684341886080802e-14,
     "_bottom": 5.684341886080802e-14,
     "_horizontalCenter": 0,
