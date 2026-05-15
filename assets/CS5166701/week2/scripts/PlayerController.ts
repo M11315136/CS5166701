@@ -13,9 +13,15 @@ import {
   Camera,
   Contact2DType,
   Collider2D,
+  v3,
   UITransform,
 } from "cc";
+import { WinBoard } from "../../week3/scripts/UI/WinBoard";
 import { DataType } from "../../week1/scripts/Data/DataStructure";
+import type { IPlayerState } from "./states/State";
+import { IdleState } from "./states/IdleState";
+import { RunState } from "./states/RunState";
+import { JumpState } from "./states/JumpState";
 
 const { ccclass, property } = _decorator;
 
@@ -27,6 +33,12 @@ enum MoveDir {
 
 enum EventType {
   KeyCollected = "key-collected",
+}
+
+enum PlayerState {
+  Idle = "Idle",
+  Run = "Run",
+  Jump = "Jump",
 }
 
 @ccclass("PlayerController")
@@ -56,13 +68,25 @@ export class PlayerController extends Component {
   private _anim: Animation;
   private _rb: RigidBody2D;
 
+  private _state: PlayerState = PlayerState.Idle;
   private _moveDir: MoveDir = MoveDir.Stop;
   private _isGrounded: boolean = true;
-  private _currentState: string = "";
+  private _currentAnim: string = "";
   private _leftHeld: boolean = false;
   private _rightHeld: boolean = false;
   private _blockedLeft: boolean = false;
   private _blockedRight: boolean = false;
+
+  // state instances
+  private _stateInstances: Record<PlayerState, IPlayerState> = {
+    [PlayerState.Idle]: new IdleState(),
+    [PlayerState.Run]: new RunState(),
+    [PlayerState.Jump]: new JumpState(),
+  };
+
+  public get animation(): Animation {
+    return this._anim;
+  }
 
   private get moveDir() {
     return this._moveDir;
@@ -80,9 +104,6 @@ export class PlayerController extends Component {
     this._rb = this.player.getComponent(RigidBody2D)!;
     input.on(Input.EventType.KEY_DOWN, this._onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this._onKeyUp, this);
-
-    this._playAnim(this.idleAnim);
-    const collider = this.player.getComponent(Collider2D);
     PhysicsSystem2D.instance.enable = true;
   }
 
@@ -91,7 +112,7 @@ export class PlayerController extends Component {
     this._checkBlockedLeft();
     this._checkBlockedRight();
     this._updateMovement();
-    this._updateAnimation();
+    this._updateStateMachine();
   }
 
   protected jump() {
@@ -104,7 +125,7 @@ export class PlayerController extends Component {
       this.jumpForce,
     );
     console.log("跳躍！", this._rb.linearVelocity);
-    this._playAnim(this.jumpAnim);
+    this._changeState(PlayerState.Jump);
   }
 
   /* #region week2 */
@@ -277,27 +298,34 @@ export class PlayerController extends Component {
 
   /* #region week2 */
 
-  // TODO: 移動時會持續更新 Start/End Contact，導致 isGrounded 狀態不固定 (持續 false)，需修正。
-  // 改用射線判斷是否觸地，避免移動時接觸地面狀態不穩定的問題。
-  private _updateAnimation() {
+  private _updateStateMachine() {
+    let nextState: PlayerState;
+
     if (!this._isGrounded) {
-      this._playAnim(this.jumpAnim);
+      nextState = PlayerState.Jump;
     } else if (this.moveDir === MoveDir.Stop) {
-      this._playAnim(this.idleAnim);
-    } else if (
-      this.moveDir === MoveDir.Left ||
-      this.moveDir === MoveDir.Right
-    ) {
-      this._playAnim(this.walkAnim);
+      nextState = PlayerState.Idle;
+    } else {
+      nextState = PlayerState.Run;
     }
+
+    this._changeState(nextState);
   }
 
-  private _playAnim(name: string) {
-    if (this._currentState === name) {
+  private _changeState(nextState: PlayerState) {
+    if (this._state === nextState) {
       return;
     }
-    this._currentState = name;
-    this._anim.play(name);
+
+    this._state = nextState;
+    this._onEnterState(nextState);
+  }
+
+  private _onEnterState(state: PlayerState) {
+    const instance = this._stateInstances[state];
+    if (instance) {
+      instance.enter(this);
+    }
   }
   /* #endregion */
 }
