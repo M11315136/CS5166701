@@ -22,6 +22,8 @@ import type { IPlayerState } from "./states/State";
 import { IdleState } from "./states/IdleState";
 import { RunState } from "./states/RunState";
 import { JumpState } from "./states/JumpState";
+import { AudioManager } from "./AudioManager";
+import GameAudio from "./AudioNameConfig";
 
 const { ccclass, property } = _decorator;
 
@@ -40,6 +42,7 @@ enum PlayerState {
   Run = "Run",
   Jump = "Jump",
 }
+
 
 @ccclass("PlayerController")
 export class PlayerController extends Component {
@@ -119,7 +122,6 @@ export class PlayerController extends Component {
     if (!this._isGrounded) {
       return;
     }
-
     this._rb.linearVelocity = new Vec2(
       this._rb.linearVelocity.x,
       this.jumpForce,
@@ -313,10 +315,21 @@ export class PlayerController extends Component {
   }
 
   private _changeState(nextState: PlayerState) {
+    console.log(`當前狀態: ${this._state}，下一個狀態: ${nextState}`);
     if (this._state === nextState) {
       return;
     }
-
+    if (nextState === PlayerState.Run) {
+      AudioManager.instance.stopEffect(GameAudio.Effect.Jump);
+      AudioManager.instance.playEffect(GameAudio.Effect.Step, true);
+    } else if (nextState === PlayerState.Jump) {
+      console.log("切換到 Jump 狀態，停止步行音效，播放跳躍音效");
+      AudioManager.instance.stopEffect(GameAudio.Effect.Step);
+      AudioManager.instance.playEffect(GameAudio.Effect.Jump);
+    } else {
+      AudioManager.instance.stopEffect(GameAudio.Effect.Jump);
+      AudioManager.instance.stopEffect(GameAudio.Effect.Step);
+    }
     this._state = nextState;
     this._onEnterState(nextState);
   }

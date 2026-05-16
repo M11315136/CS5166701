@@ -1,4 +1,6 @@
 import { _decorator, Component, ProgressBar, Button, director } from "cc";
+import { AudioManager } from "../../../week2/scripts/AudioManager";
+import GameAudio from "../../../week2/scripts/AudioNameConfig";
 const { ccclass, property } = _decorator;
 
 @ccclass("Load")
@@ -37,6 +39,7 @@ export class Load extends Component {
   }
 
   private _onStart() {
+    AudioManager.instance.playEffect(GameAudio.Effect.Button);
     director.loadScene(this.gameName);
   }
 }
