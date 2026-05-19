@@ -43,7 +43,6 @@ enum PlayerState {
   Jump = "Jump",
 }
 
-
 @ccclass("PlayerController")
 export class PlayerController extends Component {
   public static EVENT_TYPE = EventType;
@@ -127,6 +126,7 @@ export class PlayerController extends Component {
       this.jumpForce,
     );
     console.log("跳躍！", this._rb.linearVelocity);
+    AudioManager.instance.playEffect(GameAudio.Effect.Jump);
     this._changeState(PlayerState.Jump);
   }
 
@@ -271,7 +271,6 @@ export class PlayerController extends Component {
       this.moveDir = MoveDir.Stop;
       return;
     }
-
     this.moveDir = this._leftHeld ? MoveDir.Left : MoveDir.Right;
   }
 
@@ -315,20 +314,8 @@ export class PlayerController extends Component {
   }
 
   private _changeState(nextState: PlayerState) {
-    console.log(`當前狀態: ${this._state}，下一個狀態: ${nextState}`);
     if (this._state === nextState) {
       return;
-    }
-    if (nextState === PlayerState.Run) {
-      AudioManager.instance.stopEffect(GameAudio.Effect.Jump);
-      AudioManager.instance.playEffect(GameAudio.Effect.Step, true);
-    } else if (nextState === PlayerState.Jump) {
-      console.log("切換到 Jump 狀態，停止步行音效，播放跳躍音效");
-      AudioManager.instance.stopEffect(GameAudio.Effect.Step);
-      AudioManager.instance.playEffect(GameAudio.Effect.Jump);
-    } else {
-      AudioManager.instance.stopEffect(GameAudio.Effect.Jump);
-      AudioManager.instance.stopEffect(GameAudio.Effect.Step);
     }
     this._state = nextState;
     this._onEnterState(nextState);

@@ -1,48 +1,91 @@
-import { resources, AudioClip, AudioSource, director } from 'cc';
+import { resources, AudioClip, AudioSource, director, Node } from "cc";
 
 export class AudioManager {
-    private static _instance: AudioManager = null!;
-    private _audioSource: AudioSource = null!;
+  private static _instance: AudioManager | null = null;
 
-    public static get instance() {
-        if (!this._instance) {
-            this._instance = new AudioManager();
-            this._instance.init();
-        }
-        return this._instance;
+  private _audioSource: AudioSource | null = null;
+
+  // 音效快取
+  private _cache: Map<string, AudioClip> = new Map();
+
+  public static get instance() {
+    if (!this._instance) {
+      this._instance = new AudioManager();
+      this._instance.init();
     }
 
-    private init() {
-        // 常駐節點：在常駐場景中建立一個全域 AudioSource
-        const audioNode = director.getScene()?.getChildByName('AudioManager');
+    return this._instance;
+  }
 
-        this._audioSource = audioNode.getComponent(AudioSource) || audioNode.addComponent(AudioSource);
+  private init() {
+    let audioNode = director.getScene()?.getChildByName("AudioManager");
+
+    if (!audioNode) {
+      audioNode = new Node("AudioManager");
+
+      director.getScene()?.addChild(audioNode);
+
+      director.addPersistRootNode(audioNode);
     }
 
-    /**
-     * 動態載入並播放音效
-     * @param path resources 底下的相對路徑，不需要副檔名
-     */
-    public playEffect(path: string, loop: boolean = false) {
-        resources.load(`audio/${path}`, AudioClip, (err, clip) => {
-            if (err) {
-                console.error('音效載入失敗:', err);
-                return;
-            }
-            // 載入成功後播放
-            if(!loop){
-            this._audioSource.playOneShot(clip,0.3);
-            }else{
-                this._audioSource.clip = clip;
-                this._audioSource.loop = true;
-                this._audioSource.play();
-            }
-        });
+    this._audioSource =
+      audioNode.getComponent(AudioSource) ||
+      audioNode.addComponent(AudioSource);
+  }
+
+  public playEffect(path: string) {
+    const fullPath = `audio/${path}`;
+    if (this._cache.has(fullPath)) {
+      const clip = this._cache.get(fullPath)!;
+
+      this.playClip(clip);
+
+      return;
     }
 
-    public stopEffect(path: string) {
-        resources.load(`audio/${path}`, AudioClip, (err, clip) => {
-            this._audioSource.stop();
-        });
+    resources.load(fullPath, AudioClip, (err, clip) => {
+      if (err || !clip) {
+        console.error("音效載入失敗:", err);
+        return;
+      }
+      clip.addRef();
+      this._cache.set(fullPath, clip);
+
+      this.playClip(clip);
+    });
+  }
+
+  private playClip(clip: AudioClip) {
+    if (!this._audioSource) {
+      return;
     }
+
+
+      this._audioSource.playOneShot(clip, 0.3);
+
+  }
+
+  public stopEffect() {
+    this._audioSource?.stop();
+  }
+
+  public preload(path: string) {
+    const fullPath = `audio/${path}`;
+
+    // 已存在就不重複 load
+    if (this._cache.has(fullPath)) {
+      return;
+    }
+
+    resources.load(fullPath, AudioClip, (err, clip) => {
+      if (err || !clip) {
+        console.error("預載失敗:", err);
+        return;
+      }
+
+      clip.addRef();
+
+      this._cache.set(fullPath, clip);
+    });
+  }
 }
