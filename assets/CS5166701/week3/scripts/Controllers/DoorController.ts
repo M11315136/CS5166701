@@ -13,6 +13,7 @@ import KeyController from "./KeyController";
 import { DataType } from "../../../week1/scripts/Data/DataStructure";
 import { PlayerController } from "../../../week1/scripts/Controller/PlayerController";
 import Game from "../../../week1/scripts/System/Game";
+import { WinBoard } from "../UI/WinBoard";
 
 const { ccclass, property } = _decorator;
 
@@ -22,14 +23,18 @@ export default class DoorController extends Component {
   @property(Node)
   public readonly target: Node = null;
 
-  @property({type: Enum(DataType.Tag)})
-  public readonly keyName: DataType.Tag = DataType.Tag.KeyYellow;
+  @property({type: Enum(DataType.Group)})
+  public readonly keyGroup: DataType.Group = DataType.Group.Item;
+
+  @property({type: Enum(DataType.Item)})
+  public readonly keyTag: DataType.Item = DataType.Item.KeyYellow;
+
 
   @property
   public readonly openAnim: string = "open";
 
-  @property(Node)
-  public readonly winBoard: Node = null;
+  @property(WinBoard)
+  public readonly winBoard: WinBoard = null;
 
   private _isOpen = false;
 
@@ -54,8 +59,8 @@ export default class DoorController extends Component {
     );
   }
 
-  private _onKeyCollected(name: DataType.Tag) {
-    if (+name === +this.keyName) {
+  private _onKeyCollected(group: DataType.Group, tag: DataType.Item) {
+    if (+group === +this.keyGroup && +tag === +this.keyTag) {
       this._open();
     }
   }
@@ -69,8 +74,8 @@ export default class DoorController extends Component {
   }
 
   private _onBeginContact(self: Collider2D, other: Collider2D) {
-    if (other.tag === DataType.Tag.Player && this._isOpen) {
-      this.winBoard.active = true;
+    if (other.group === DataType.Group.Player && this._isOpen) {
+      this.winBoard.win();
     }
   }
 }

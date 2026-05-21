@@ -3,6 +3,7 @@ import Game from "../../../week1/scripts/System/Game";
 import { PlayerController } from "../../../week1/scripts/Controller/PlayerController";
 import KeyController from "./KeyController";
 import DoorController from "./DoorController";
+import { ScoreBoard } from "../UI/ScoreBoard";
 
 const { ccclass, property } = _decorator;
 
@@ -18,6 +19,9 @@ export default class GameContext extends Component {
 
   @property(PlayerController)
   public readonly playerController: PlayerController = null;
+
+  @property(ScoreBoard)
+  public readonly scoreBoard: ScoreBoard = null;
 
   protected onLoad(): void {
     Game.context = this;

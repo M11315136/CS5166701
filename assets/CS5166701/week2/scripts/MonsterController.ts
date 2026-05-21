@@ -32,6 +32,9 @@ export class MonsterController extends Component {
   @property({ tooltip: "Movement speed (units/sec)" })
   public readonly speed = 3;
 
+  @property(WinBoard)
+  public readonly winBoard: WinBoard = null;
+
   private _anim: Animation;
   private _direction: number = 1; // 1 = right, -1 = left
 
@@ -51,7 +54,7 @@ export class MonsterController extends Component {
       PhysicsSystem2D.instance.enable = true;
       // collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
     }
-
+    collider.on(Contact2DType.BEGIN_CONTACT, this._onBeginContact, this);
     // start facing based on direction
     this.monsterSprite.setScale(this._direction === 1 ? -1 : 1, 1, 1);
   }
@@ -77,7 +80,7 @@ export class MonsterController extends Component {
 
     const results = PhysicsSystem2D.instance.raycast(start, end);
     const hasGround = results.some((res) => {
-      const isGround = res.collider.tag === DataType.Tag.Ground;
+      const isGround = res.collider.group === DataType.Group.Floor && res.collider.tag === DataType.Floor.Ground;
       const isFloor = res.normal.y >= 0.9;
       return isGround && isFloor;
     });
@@ -87,5 +90,13 @@ export class MonsterController extends Component {
       this._direction *= -1;
       this.monsterSprite.setScale(this._direction === 1 ? -1 : 1, 1, 1);
     }
+  }
+
+  private _onBeginContact(self: Collider2D, other: Collider2D) {
+    if (other.group === DataType.Group.Player) {
+        this.winBoard.lose();
+        this.winBoard.node.setPosition(other.node.position.x, this.winBoard.node.position.y, this.target.position.z);
+        other.node.active = false;
+      }
   }
 }

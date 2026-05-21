@@ -6,16 +6,16 @@ import { DataType } from "../../../week1/scripts/Data/DataStructure";
 
 const { ccclass, property } = _decorator;
 
-@ccclass("Key")
-export default class Key extends Item {
+@ccclass("Coin")
+export default class Coin extends Item {
 
 
   protected onBeginContact(self: Collider2D, other: Collider2D) {
     if (other.group === DataType.Group.Player) {
 
       Game.context.playerController.node.emit(
-        PlayerController.EVENT_TYPE.KeyCollected,
-        this.group,this.tag
+        PlayerController.EVENT_TYPE.CoinCollected,
+        this
       );
       this.collider.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
       this.target.getComponent(UIOpacity).opacity = 0;

@@ -23,6 +23,7 @@ enum MoveDir {
 
 enum EventType {
   KeyCollected = "key-collected",
+  CoinCollected = "coin-collected",
 }
 
 @ccclass("PlayerController")
