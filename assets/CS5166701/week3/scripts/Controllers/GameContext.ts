@@ -1,9 +1,9 @@
 import { _decorator, Component, Node } from "cc";
 import Game from "../../../week1/scripts/System/Game";
-import { PlayerController } from "../../../week1/scripts/Controller/PlayerController";
 import KeyController from "./KeyController";
 import DoorController from "./DoorController";
 import { ScoreBoard } from "../UI/ScoreBoard";
+import { PlayerController } from "../../../week2/scripts/Controller/PlayerController";
 
 const { ccclass, property } = _decorator;
 

@@ -123,7 +123,7 @@ export class PlayerController extends Component {
 
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     /* #region week3 */
-    if (other.tag === DataType.Tag.Hole) {
+    if (other.tag === DataType.Group.Hole) {
       this.winBoard.node.active = true;
       this.winBoard.label.string = "You Lose!";
       this.winBoard.node.position = v3(
@@ -154,7 +154,9 @@ export class PlayerController extends Component {
       // 找到第一個符合條件的地板
       const groundHit = results.find((res) => {
         // 條件 1: Tag 是地板或障礙物
-        const isTarget = res.collider.tag === DataType.Tag.Ground;
+        const isTarget =
+          res.collider.group === DataType.Group.Floor &&
+          res.collider.tag === DataType.Floor.Ground;
 
         // 條件 2: 法線向上 (避免射線掃到側牆也算接地)
         const isFloor = res.normal.y >= 0.9;
@@ -183,7 +185,7 @@ export class PlayerController extends Component {
       const results = PhysicsSystem2D.instance.raycast(start, end);
 
       const blocked = results.some((res) => {
-        const isBlock = res.collider.tag === DataType.Tag.Block;
+        const isBlock = res.collider.group === DataType.Group.Block;
         const isLeftWall = res.normal.x >= 0.9;
         return isBlock && isLeftWall;
       });
@@ -212,7 +214,7 @@ export class PlayerController extends Component {
       const results = PhysicsSystem2D.instance.raycast(start, end);
 
       const blocked = results.some((res) => {
-        const isBlock = res.collider.tag === DataType.Tag.Block;
+        const isBlock = res.collider.group === DataType.Group.Block;
         const isRightWall = res.normal.x <= -0.9;
         return isBlock && isRightWall;
       });

@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Button, Label, Vec3 } from "cc";
-import { PlayerController } from "../../../week2/scripts/PlayerController";
+import { PlayerController } from "../../../week2/scripts/Controller/PlayerController";
 import Game from "../../../week1/scripts/System/Game";
 const { ccclass, property } = _decorator;
 

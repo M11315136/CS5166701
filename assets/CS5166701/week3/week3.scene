@@ -30,11 +30,11 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 283
+      "__id__": 282
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 284
+      "__id__": 283
     },
     "_id": "e843794c-690c-4e18-badf-cc7ff1fd5c81"
   },
@@ -153,13 +153,13 @@
         "__id__": 275
       },
       {
-        "__id__": 278
+        "__id__": 277
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 282
+        "__id__": 281
       }
     ],
     "_prefab": null,
@@ -243,17 +243,17 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "player": {
+    "target": {
       "__id__": 8
     },
-    "camera": {
-      "__id__": 11
-    },
     "moveSpeed": 5,
-    "jumpForce": 11,
     "idleAnim": "idle",
     "walkAnim": "walk",
     "jumpAnim": "jump",
+    "camera": {
+      "__id__": 11
+    },
+    "jumpForce": 15,
     "_id": "dbxOUb2idHqp6iaTMmWFo4"
   },
   {
@@ -3515,6 +3515,9 @@
     "_active": true,
     "_components": [
       {
+        "__id__": 106
+      },
+      {
         "__id__": 107
       },
       {
@@ -3568,9 +3571,6 @@
       },
       {
         "__id__": 105
-      },
-      {
-        "__id__": 106
       }
     ],
     "_prefab": null,
@@ -3662,25 +3662,6 @@
     "_id": "ff9/pq1PdP/pBYqIVjb+K+"
   },
   {
-    "__type__": "cc.Animation",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 103
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "playOnLoad": false,
-    "_clips": [
-      {
-        "__uuid__": "c6f8e76f-fe8d-4d86-865e-f5610e28bcfa",
-        "__expectedType__": "cc.AnimationClip"
-      }
-    ],
-    "_defaultClip": null,
-    "_id": "7a7eK+VdxGbIaceeqIXrGS"
-  },
-  {
     "__type__": "cc.UITransform",
     "_name": "",
     "_objFlags": 0,
@@ -3754,6 +3735,25 @@
     "_angularVelocity": 0,
     "_fixedRotation": true,
     "_id": "5eip50wURDz5yNuLOlj2jV"
+  },
+  {
+    "__type__": "cc.Animation",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 102
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "playOnLoad": false,
+    "_clips": [
+      {
+        "__uuid__": "c6f8e76f-fe8d-4d86-865e-f5610e28bcfa",
+        "__expectedType__": "cc.AnimationClip"
+      }
+    ],
+    "_defaultClip": null,
+    "_id": "a1Is9HH5lBxJ2NPRi/4Udk"
   },
   {
     "__type__": "cc.UITransform",
@@ -7061,7 +7061,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 64,
+      "width": 63.36,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -7166,7 +7166,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 11,
+      "width": 11.12,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -7499,9 +7499,6 @@
     "_components": [
       {
         "__id__": 276
-      },
-      {
-        "__id__": 277
       }
     ],
     "_prefab": null,
@@ -7545,34 +7542,14 @@
     "target": {
       "__id__": 102
     },
-    "monsterSprite": {
-      "__id__": 103
-    },
-    "m1Anim": "slime",
-    "speed": 20,
+    "moveSpeed": 5,
+    "idleAnim": "",
+    "walkAnim": "slime",
+    "jumpAnim": "",
     "winBoard": {
       "__id__": 256
     },
     "_id": "21ErHZwetKZoNMreonGSKv"
-  },
-  {
-    "__type__": "cc.Animation",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 275
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "playOnLoad": false,
-    "_clips": [
-      {
-        "__uuid__": "c6f8e76f-fe8d-4d86-865e-f5610e28bcfa",
-        "__expectedType__": "cc.AnimationClip"
-      }
-    ],
-    "_defaultClip": null,
-    "_id": "7bFl5RVZ9GxKd8bdDDi62S"
   },
   {
     "__type__": "cc.Node",
@@ -7583,10 +7560,10 @@
     },
     "_children": [
       {
-        "__id__": 279
+        "__id__": 278
       },
       {
-        "__id__": 280
+        "__id__": 279
       }
     ],
     "_active": true,
@@ -7625,7 +7602,7 @@
     "_name": "Key",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 278
+      "__id__": 277
     },
     "_children": [],
     "_active": true,
@@ -7664,13 +7641,13 @@
     "_name": "Door",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 278
+      "__id__": 277
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 281
+        "__id__": 280
       }
     ],
     "_prefab": null,
@@ -7707,7 +7684,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 280
+      "__id__": 279
     },
     "_enabled": true,
     "__prefab": null,
@@ -7733,7 +7710,7 @@
     "__prefab": null,
     "keyController": null,
     "doorController": {
-      "__id__": 281
+      "__id__": 280
     },
     "playerController": {
       "__id__": 7
@@ -7785,19 +7762,19 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 285
+      "__id__": 284
     },
     "shadows": {
-      "__id__": 286
+      "__id__": 285
     },
     "_skybox": {
-      "__id__": 287
+      "__id__": 286
     },
     "fog": {
-      "__id__": 288
+      "__id__": 287
     },
     "octree": {
-      "__id__": 289
+      "__id__": 288
     }
   },
   {

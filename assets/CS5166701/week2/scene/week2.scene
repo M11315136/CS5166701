@@ -32,7 +32,7 @@
     "_prefab": null,
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 149
+      "__id__": 148
     },
     "_id": "5f7f970d-26f5-4e2f-bc73-d573bd74ca55"
   },
@@ -238,17 +238,17 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "player": {
+    "target": {
       "__id__": 8
     },
-    "camera": {
-      "__id__": 11
-    },
     "moveSpeed": 5,
-    "jumpForce": 11,
     "idleAnim": "idle",
     "walkAnim": "walk",
     "jumpAnim": "jump",
+    "camera": {
+      "__id__": 11
+    },
+    "jumpForce": 11,
     "_id": "451tWwuGpAK79z2Dxb81zF"
   },
   {
@@ -4831,11 +4831,11 @@
     "target": {
       "__id__": 102
     },
-    "monsterSprite": {
-      "__id__": 103
-    },
-    "m1Anim": "slime",
-    "speed": 20,
+    "moveSpeed": 5,
+    "idleAnim": "idle",
+    "walkAnim": "walk",
+    "jumpAnim": "jump",
+    "winBoard": null,
     "_id": "76iaxQkE9FXJ9VNjQ/7sz+"
   },
   {
@@ -4867,41 +4867,29 @@
     "_enabled": true,
     "__prefab": null,
     "keyController": null,
-    "doorController": {
-      "__id__": 148
+    "doorController": null,
+    "playerController": {
+      "__id__": 7
     },
-    "playerController": null,
+    "scoreBoard": null,
     "_id": "4fK6vH9FFFcZNKhOkIZZtm"
-  },
-  {
-    "__type__": "1e08cBdkKRD3b1QpHoVCAJl",
-    "_name": "",
-    "_objFlags": 0,
-    "node": null,
-    "_enabled": true,
-    "__prefab": null,
-    "target": null,
-    "keyName": "3",
-    "openAnim": "open",
-    "winBoard": null,
-    "_id": "dcDfAudexI5YP+ZrYt6v9v"
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 150
+      "__id__": 149
     },
     "shadows": {
-      "__id__": 151
+      "__id__": 150
     },
     "_skybox": {
-      "__id__": 152
+      "__id__": 151
     },
     "fog": {
-      "__id__": 153
+      "__id__": 152
     },
     "octree": {
-      "__id__": 154
+      "__id__": 153
     }
   },
   {
