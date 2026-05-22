@@ -3,6 +3,7 @@ import Game from "../../../week1/scripts/System/Game";
 import KeyController from "./KeyController";
 import DoorController from "./DoorController";
 import { ScoreBoard } from "../UI/ScoreBoard";
+import { CountdownTimer } from "../UI/CountdownTimer";
 import { PlayerController } from "../../../week2/scripts/Controller/PlayerController";
 
 const { ccclass, property } = _decorator;
@@ -22,6 +23,9 @@ export default class GameContext extends Component {
 
   @property(ScoreBoard)
   public readonly scoreBoard: ScoreBoard = null;
+
+  @property(CountdownTimer)
+  public readonly countdown: CountdownTimer = null;
 
   protected onLoad(): void {
     Game.context = this;

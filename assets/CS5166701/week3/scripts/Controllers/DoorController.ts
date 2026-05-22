@@ -23,12 +23,11 @@ export default class DoorController extends Component {
   @property(Node)
   public readonly target: Node = null;
 
-  @property({type: Enum(DataType.Group)})
+  @property({ type: Enum(DataType.Group) })
   public readonly keyGroup: DataType.Group = DataType.Group.Item;
 
-  @property({type: Enum(DataType.Item)})
+  @property({ type: Enum(DataType.Item) })
   public readonly keyTag: DataType.Item = DataType.Item.KeyYellow;
-
 
   @property
   public readonly openAnim: string = "open";
@@ -75,7 +74,11 @@ export default class DoorController extends Component {
 
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     if (other.group === DataType.Group.Player && this._isOpen) {
-      this.winBoard.win();
+      if (Game.context.countdown) {
+        Game.context.countdown.completeWin();
+      } else {
+        this.winBoard.win();
+      }
     }
   }
 }

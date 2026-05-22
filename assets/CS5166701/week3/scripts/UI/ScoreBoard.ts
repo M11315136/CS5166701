@@ -21,6 +21,16 @@ export class ScoreBoard extends Component {
   public get score() {
     return this._scoreValue;
   }
+
+  public addScore(value: number) {
+    if (value <= 0) {
+      return;
+    }
+
+    this._scoreValue += value;
+    this.value.string = this._scoreValue.toString();
+  }
+
   protected start() {
     Game.context.playerController.node.on(
       PlayerController.EVENT_TYPE.CoinCollected,
@@ -43,7 +53,6 @@ export class ScoreBoard extends Component {
     this.scoreBoard.setWorldPosition(target);
   }
   private _score() {
-    this._scoreValue++;
-    this.value.string = this._scoreValue.toString();
+    this.addScore(1);
   }
 }

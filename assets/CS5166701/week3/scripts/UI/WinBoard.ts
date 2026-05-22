@@ -31,6 +31,7 @@ export class WinBoard extends Component {
     this.label.string = "You Win!";
     this.score.string =
       "Your Score: " + Game.context.scoreBoard.score.toString();
+    Game.context.playerController.unregisterInput();
   }
 
   protected start() {
