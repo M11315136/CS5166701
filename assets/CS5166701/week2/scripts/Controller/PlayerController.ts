@@ -12,8 +12,6 @@ import {
   UITransform,
 } from "cc";
 import { DataType } from "../../../week1/scripts/Data/DataStructure";
-import { AudioManager } from "../AudioManager";
-import GameAudio from "../AudioNameConfig";
 import { EntityController, EntityState, MoveDir } from "./EntityController";
 import { BaseState } from "../states/Base/BaseState";
 import { PlayerIdleState } from "../states/Player/PlayerIdleState";
@@ -80,7 +78,6 @@ export class PlayerController extends EntityController {
       this.jumpForce,
     );
     console.log("跳躍！", this._rb.linearVelocity);
-    AudioManager.instance.playEffect(GameAudio.Effect.Jump);
   }
 
   /* #region week2 */
