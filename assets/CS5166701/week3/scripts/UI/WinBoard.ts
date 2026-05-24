@@ -23,6 +23,7 @@ export class WinBoard extends Component {
     this.score.string =
       "Your Score: " + Game.context.scoreBoard.score.toString();
     Game.context.playerController.unregisterInput();
+    Game.context.submitScore();
   }
 
   public win() {
@@ -32,6 +33,7 @@ export class WinBoard extends Component {
     this.score.string =
       "Your Score: " + Game.context.scoreBoard.score.toString();
     Game.context.playerController.unregisterInput();
+    Game.context.submitScore();
   }
 
   protected start() {
@@ -40,5 +42,7 @@ export class WinBoard extends Component {
 
   private _close() {
     this.node.active = false;
+    // WinBoard 關閉後補一次排行榜，避免 WinBoard 面板原本蓋住它
+    Game.context.refreshLeaderboard();
   }
 }
