@@ -17,7 +17,8 @@ import { BaseState } from "../states/Base/BaseState";
 import { PlayerIdleState } from "../states/Player/PlayerIdleState";
 import { PlayerRunState } from "../states/Player/PlayerRunState";
 import { PlayerJumpState } from "../states/Player/PlayerJumpState";
-
+import GameContext from "../../../week3/scripts/Controllers/GameContext";
+import Game from "../../../week1/scripts/System/Game";
 const { ccclass, property } = _decorator;
 
 enum EventType {
@@ -55,11 +56,21 @@ export class PlayerController extends EntityController {
     this.moveDir = MoveDir.Stop;
   }
 
+  // 註冊鍵盤輸入事件的 helper，方便 start 與 reset 時重用
+  public registerInput() {
+    input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+  }
+
+  protected onLoad() {
+    Game.context.node.on(GameContext.EVENT_TYPE.GameReset, this._reset, this);
+  }
+
   protected start() {
     this._anim = this.target.getComponent(Animation)!;
     this._rb = this.target.getComponent(RigidBody2D)!;
-    input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-    input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+    // 使用 registerInput() 統一註冊輸入，方便後續重新啟用
+    this.registerInput();
     PhysicsSystem2D.instance.enable = true;
   }
 
@@ -256,4 +267,18 @@ export class PlayerController extends EntityController {
     }
     this.moveDir = this._leftHeld ? MoveDir.Left : MoveDir.Right;
   }
+
+  private _reset() {
+    // 重置玩家位置、狀態與分數
+    this.target.setPosition(-357, -245, 0);
+    this.camera.node.setPosition(0, 0, 0);
+    this.moveDir = MoveDir.Stop;
+    this._leftHeld = false;
+    this._rightHeld = false;
+    this.target.setScale(1, 1, 1);
+    this._isGrounded = true;
+    // 當遊戲重置時，確保鍵盤事件已被註冊（若之前在結算時被取消）
+    this.registerInput();
+  }
 }
+  

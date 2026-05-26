@@ -90,12 +90,6 @@ export class MonsterController extends EntityController {
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     if (other.group === DataType.Group.Player) {
       this.winBoard.lose();
-      this.winBoard.node.setPosition(
-        other.node.position.x,
-        this.winBoard.node.position.y,
-        this.target.position.z,
-      );
-      // other.node.active = false;
     }
   }
 }

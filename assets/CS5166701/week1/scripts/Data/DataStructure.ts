@@ -12,8 +12,7 @@ export namespace DataType {
 
     export enum Item {
         KeyYellow = 0,
-        Door = 1,
-        Coin = 2,
+        Coin = 1,
     }
 
     export enum Floor {

@@ -123,14 +123,8 @@ export class PlayerController extends Component {
 
   private _onBeginContact(self: Collider2D, other: Collider2D) {
     /* #region week3 */
-    if (other.tag === DataType.Group.Hole) {
-      this.winBoard.node.active = true;
-      this.winBoard.label.string = "You Lose!";
-      this.winBoard.node.position = v3(
-        this.player.position.x,
-        this.winBoard.node.position.y,
-        0,
-      );
+    if (other.group === DataType.Group.Hole) {
+      this.winBoard.lose();
     }
     /* #endregion */
   }

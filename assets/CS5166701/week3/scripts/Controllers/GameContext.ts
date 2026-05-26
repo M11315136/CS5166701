@@ -11,8 +11,13 @@ import { LeaderboardUI } from "../../../week4/scripts/UI/LeaderboardUI";
 
 const { ccclass, property } = _decorator;
 
+enum EventType {
+  GameReset = "game-reset",
+}
+
 @ccclass("GameContext")
 export default class GameContext extends Component {
+  public static EVENT_TYPE = EventType;
   protected static instance: GameContext = null;
 
   @property(KeyController)
